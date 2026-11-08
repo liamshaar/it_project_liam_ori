@@ -5,69 +5,7 @@
 
 ---
 
-## Proposal 1 (preferred): OpenRouter - LLM providers, price vs. reliability
-
-**Summary.** The same open-weight LLM (e.g. Llama 3.3 70B) is served by many competing inference providers, each with its own price and reliability. OpenRouter aggregates them and publishes, per model and per provider, the current price and rolling uptime statistics. We want to track these over the semester to answer: *how much can be saved on the same model by choosing the right provider, and what does that saving cost in reliability?*
-
-**Content.** For each tracked model, a list of provider endpoints with: provider name, status, price per prompt/completion token, uptime over the last 5 minutes / 30 minutes / 1 day, and (when available) latency and throughput percentiles over the last 30 minutes.
-
-**URL.** `https://openrouter.ai/api/v1/models/{author}/{slug}/endpoints`
-Example: `https://openrouter.ai/api/v1/models/meta-llama/llama-3.3-70b-instruct/endpoints`
-Docs: https://openrouter.ai/docs/api/api-reference/endpoints/list-all-endpoints-for-a-model
-
-**Update frequency.** Near real-time: uptime is computed over rolling 5-minute, 30-minute and 1-day windows. Prices and the list of providers change occasionally. Planned sampling: every 30 minutes, for 3-5 popular models.
-
-**Expected sample size.** 9348 bytes per request (one model). For 3-5 models every 30 minutes over ~70 days this is roughly 100-200 MB of raw JSON, well under 500 MB after gzip compression.
-
-**API key / password.** Not required for prices and uptime (verified with curl). Latency and throughput fields were returned as `null` without authentication; they may require a free OpenRouter account key. If used, the key will be stored outside the repository with `chmod 600`.
-
-**Why the data disappears.** Uptime values are rolling windows and prices are overwritten when they change. We did not find a downloadable per-provider history, so a missed sample is lost.
-
-**Limitations.** Many providers report 100% uptime most of the time and prices change rarely, so variation between samples depends on tracking several popular models with many providers.
-
-**Data sample** (excerpt, first 2 providers, collected 2026-11-08):
-
-```json
-{
-  "id": "meta-llama/llama-3.3-70b-instruct",
-  "endpoints_total": 9,
-  "endpoints": [
-    {
-      "provider_name": "DeepInfra",
-      "status": 0,
-      "pricing": {
-        "prompt": "0.0000001",
-        "completion": "0.00000032",
-        "discount": 0
-      },
-      "uptime_last_5m": 100,
-      "uptime_last_30m": 100,
-      "uptime_last_1d": 98.95031490552833,
-      "latency_last_30m": null,
-      "throughput_last_30m": null
-    },
-    {
-      "provider_name": "AkashML",
-      "status": 0,
-      "pricing": {
-        "prompt": "0.0000002",
-        "completion": "0.00000052",
-        "input_cache_read": "0.0000001",
-        "discount": 0
-      },
-      "uptime_last_5m": 100,
-      "uptime_last_30m": 100,
-      "uptime_last_1d": 100,
-      "latency_last_30m": null,
-      "throughput_last_30m": null
-    }
-  ]
-}
-```
-
----
-
-## Proposal 2: Open-Meteo Marine - wave forecast for Waimea Bay, Hawaii
+## Proposal 1 (preferred): Open-Meteo Marine - wave forecast for Waimea Bay, Hawaii
 
 **Summary.** Surf forecasts are published continuously and replaced by the next model run; the forecast as it was issued 1, 3 or 5 days ahead is not kept. We want to store the wave forecast for Waimea Bay (North Shore, Oahu) and later compare it with measurements from NOAA buoy 51201, to answer: *how accurate are wave forecasts several days ahead, and are they worse during big swells?*
 
@@ -132,7 +70,69 @@ Docs: https://open-meteo.com/en/docs/marine-weather-api
 
 ---
 
+## Proposal 2: OpenRouter - LLM providers, price vs. reliability
+
+**Summary.** The same open-weight LLM (e.g. Llama 3.3 70B) is served by many competing inference providers, each with its own price and reliability. OpenRouter aggregates them and publishes, per model and per provider, the current price and rolling uptime statistics. We want to track these over the semester to answer: *how much can be saved on the same model by choosing the right provider, and what does that saving cost in reliability?*
+
+**Content.** For each tracked model, a list of provider endpoints with: provider name, status, price per prompt/completion token, uptime over the last 5 minutes / 30 minutes / 1 day, and (when available) latency and throughput percentiles over the last 30 minutes.
+
+**URL.** `https://openrouter.ai/api/v1/models/{author}/{slug}/endpoints`
+Example: `https://openrouter.ai/api/v1/models/meta-llama/llama-3.3-70b-instruct/endpoints`
+Docs: https://openrouter.ai/docs/api/api-reference/endpoints/list-all-endpoints-for-a-model
+
+**Update frequency.** Near real-time: uptime is computed over rolling 5-minute, 30-minute and 1-day windows. Prices and the list of providers change occasionally. Planned sampling: every 30 minutes, for 3-5 popular models.
+
+**Expected sample size.** 9348 bytes per request (one model). For 3-5 models every 30 minutes over ~70 days this is roughly 100-200 MB of raw JSON, well under 500 MB after gzip compression.
+
+**API key / password.** Not required for prices and uptime (verified with curl). Latency and throughput fields were returned as `null` without authentication; they may require a free OpenRouter account key. If used, the key will be stored outside the repository with `chmod 600`.
+
+**Why the data disappears.** Uptime values are rolling windows and prices are overwritten when they change. We did not find a downloadable per-provider history, so a missed sample is lost.
+
+**Limitations.** Many providers report 100% uptime most of the time and prices change rarely, so variation between samples depends on tracking several popular models with many providers.
+
+**Data sample** (excerpt, first 2 providers, collected 2026-11-08):
+
+```json
+{
+  "id": "meta-llama/llama-3.3-70b-instruct",
+  "endpoints_total": 9,
+  "endpoints": [
+    {
+      "provider_name": "DeepInfra",
+      "status": 0,
+      "pricing": {
+        "prompt": "0.0000001",
+        "completion": "0.00000032",
+        "discount": 0
+      },
+      "uptime_last_5m": 100,
+      "uptime_last_30m": 100,
+      "uptime_last_1d": 98.95031490552833,
+      "latency_last_30m": null,
+      "throughput_last_30m": null
+    },
+    {
+      "provider_name": "AkashML",
+      "status": 0,
+      "pricing": {
+        "prompt": "0.0000002",
+        "completion": "0.00000052",
+        "input_cache_read": "0.0000001",
+        "discount": 0
+      },
+      "uptime_last_5m": 100,
+      "uptime_last_30m": 100,
+      "uptime_last_1d": 100,
+      "latency_last_30m": null,
+      "throughput_last_30m": null
+    }
+  ]
+}
+```
+
+---
+
 ## Ranking
 
-1. **OpenRouter (preferred)** - most relevant to us and to the current AI industry; the price/reliability trade-off between providers is a question we genuinely don't know the answer to.
-2. **Open-Meteo Marine** - a reliable, well-documented source on a topic we care about (surfing), with a natural forecast-vs-reality pairing.
+1. **Open-Meteo Marine (preferred)** - a reliable, well-documented, keyless source on a topic we care about (surfing), with a natural forecast-vs-reality pairing (NOAA buoy 51201 at Waimea Bay) for the later stages of the project.
+2. **OpenRouter** - highly relevant to the current AI industry, but prices change rarely and most providers report 100% uptime, so the data may vary less between samples.
